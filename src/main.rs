@@ -7,6 +7,8 @@ const VGA_BUFFER: *mut u8 = 0xb8000 as *mut u8;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
+    clear(0x0F);
+
     let text = "hi";
     let fg = 0x0F;
     print(text, fg);
@@ -23,7 +25,18 @@ fn print(text: &str, fg: u8) {
     }
 }
 
+fn clear(background: u8) {
+    for i in 0..2000 {
+        unsafe {
+            *VGA_BUFFER.add(i * 2) = b' ';
+            *VGA_BUFFER.add(i * 2 + 1) = background;
+        }
+    }
+}
+
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
+    print("KERNEL PANIC", 0x04);
+
     loop {}
 }

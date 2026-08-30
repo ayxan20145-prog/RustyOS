@@ -9,7 +9,7 @@ global_asm!(include_str!("boot.asm"));
 const VGA_BUFFER: *mut u8 = 0xb8000 as *mut u8;
 
 #[unsafe(no_mangle)]
-pub extern "C" fn rust_main(_magic: u32, _addr: u32) -> ! {
+pub extern "C" fn kernel_main(_magic: u32, _addr: u32) -> ! {
     clear(0x0F);
     print("hi", 0x0F);
     loop {}

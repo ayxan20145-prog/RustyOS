@@ -15,13 +15,13 @@ header_end:
 .section .text
 .code32
 .global start
-.extern rust_main
+.extern kernel_main
 
 start:
     mov esp, offset stack_top
     push eax
     push ebx
-    call rust_main
+    call kernel_main
     cli
     hlt
 

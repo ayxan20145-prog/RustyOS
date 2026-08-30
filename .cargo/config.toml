@@ -1,5 +1,8 @@
 [build]
-target = "x86_64-rustyos.json"
+target = "i686-unknown-none.json"
+
+[target.i686-unknown-none]
+rustflags = ["-C", "link-arg=-Tlinker.ld"]
 
 [unstable]
 json-target-spec = true

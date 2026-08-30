@@ -4,13 +4,4 @@ version = 4
 
 [[package]]
 name = "RustyOS"
-version = "0.4.1"
-dependencies = [
- "bootloader",
-]
-
-[[package]]
-name = "bootloader"
-version = "0.9.35"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e22d5a0b9e11dd5bee9d24a68885de6dc7ed367f897323b1c1286150fd469374"
+version = "0.5.0"

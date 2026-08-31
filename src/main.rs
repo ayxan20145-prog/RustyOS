@@ -26,6 +26,12 @@ impl Writer {
         }
     }
     fn write_byte(&mut self, byte: u8) {
+        if byte == b'\n' {
+            self.column = 0;
+            self.row += 1;
+            return;
+        }
+
         if self.column >= 80 {
             self.column = 0;
             self.row += 1;
@@ -40,18 +46,16 @@ impl Writer {
 
         self.column += 1;
     }
+    fn write_str(&mut self, text: &str) {
+        for byte in text.bytes() {
+            self.write_byte(byte);
+        }
+    }
 }
 
 impl Write for Writer {
     fn write_str(&mut self, text: &str) -> fmt::Result {
-        for byte in text.bytes() {
-            if byte == b'\n' {
-                self.column = 0;
-                self.row += 1;
-            } else {
-                self.write_byte(byte);
-            }
-        }
+        self.write_str(text);
 
         Ok(())
     }

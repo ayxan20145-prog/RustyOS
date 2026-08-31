@@ -8,20 +8,39 @@ global_asm!(include_str!("boot.asm"));
 
 const VGA_BUFFER: *mut u8 = 0xb8000 as *mut u8;
 
+struct Writer {
+    column: usize,
+    row: usize,
+    color: u8,
+}
+
+impl Writer {
+    fn new(color: u8) -> Self {
+        Self {
+            column: 0,
+            row: 0,
+            color,
+        }
+    }
+    fn write_byte(&mut self, byte: u8) {
+        unsafe {
+            let position = self.row * 80 + self.column;
+
+            *VGA_BUFFER.add(position * 2) = byte;
+            *VGA_BUFFER.add(position * 2 + 1) = self.color;
+        }
+
+        self.column += 1;
+    }
+}
+
 #[unsafe(no_mangle)]
 pub extern "C" fn kernel_main(_magic: u32, _addr: u32) -> ! {
     clear(0x0F);
-    print("hi", 0x0F);
+    let mut writer = Writer::new(0x0F);
+    writer.write_byte(b'h');
+    writer.write_byte(b'i');
     loop {}
-}
-
-fn print(text: &str, fg: u8) {
-    for (i, byte) in text.bytes().enumerate() {
-        unsafe {
-            *VGA_BUFFER.add(i * 2) = byte;
-            *VGA_BUFFER.add(i * 2 + 1) = fg;
-        }
-    }
 }
 
 fn clear(background: u8) {
@@ -35,6 +54,5 @@ fn clear(background: u8) {
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
-    print("KERNEL PANIC", 0x04);
     loop {}
 }

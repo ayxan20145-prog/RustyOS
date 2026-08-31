@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "RustyOS"
+name = "RS-DOS"
 version = "0.6.1"

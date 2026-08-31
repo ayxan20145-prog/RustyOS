@@ -1,10 +1,10 @@
 [package]
-name = "RustyOS"
+name = "RS-DOS"
 version = "0.6.1"
 edition = "2024"
 
 [[bin]]
-name = "RustyOS"
+name = "RS-DOS"
 test = false
 bench = false
 

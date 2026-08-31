@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cargo clean
-rm -rf iso rustyos.iso
+rm -rf iso rs-dos.iso

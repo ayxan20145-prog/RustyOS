@@ -10,6 +10,7 @@ use core::{
 global_asm!(include_str!("boot.asm"));
 
 const VGA_BUFFER: *mut u8 = 0xb8000 as *mut u8;
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 struct Writer {
     column: usize,
@@ -76,16 +77,12 @@ impl Write for Writer {
 pub extern "C" fn kernel_main() -> ! {
     let mut writer = Writer::new(0x0F);
     writer.clear(0x0F);
-    let logo = r#"
-        ________              _____        _______________
-        ___  __ \___  __________  /_____  ___  __ \_  ___/
-        __  /_/ /  / / /_  ___/  __/_  / / /  / / /____ \
-        _  _, _// /_/ /_(__  )/ /_ _  /_/ // /_/ /____/ /
-        /_/ |_| \__,_/ /____/ \__/ _\__, / \____/ /____/
-                                   /____/
-    "#;
-    write!(writer, "{}", logo).unwrap();
-
+    write!(
+        writer,
+        "+------------------+\n|      RS-DOS      |\n|      v{}      |\n+------------------+",
+        VERSION
+    )
+    .unwrap();
     loop {}
 }
 

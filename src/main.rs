@@ -1,8 +1,11 @@
 #![no_std]
 #![no_main]
 
-use core::arch::global_asm;
-use core::panic::PanicInfo;
+use core::{
+    arch::global_asm,
+    fmt::{self, Write},
+    panic::PanicInfo,
+};
 
 global_asm!(include_str!("boot.asm"));
 
@@ -37,7 +40,10 @@ impl Writer {
 
         self.column += 1;
     }
-    fn write_string(&mut self, text: &str) {
+}
+
+impl Write for Writer {
+    fn write_str(&mut self, text: &str) -> fmt::Result {
         for byte in text.bytes() {
             if byte == b'\n' {
                 self.column = 0;
@@ -46,14 +52,17 @@ impl Writer {
                 self.write_byte(byte);
             }
         }
+
+        Ok(())
     }
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn kernel_main(_magic: u32, _addr: u32) -> ! {
+pub extern "C" fn kernel_main() -> ! {
     clear(0x0F);
     let mut writer = Writer::new(0x0F);
-    writer.write_string("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    write!(writer, "hi").unwrap();
+
     loop {}
 }
 
@@ -67,10 +76,10 @@ fn clear(background: u8) {
 }
 
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
     let mut writer = Writer::new(0x04);
 
-    writer.write_string("KERNEL PANIC");
+    write!(writer, "KERNEL PANIC: {}", info).unwrap();
 
     loop {}
 }

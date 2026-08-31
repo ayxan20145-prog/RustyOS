@@ -19,8 +19,6 @@ header_end:
 
 start:
     mov esp, offset stack_top
-    push eax
-    push ebx
     call kernel_main
     cli
     hlt

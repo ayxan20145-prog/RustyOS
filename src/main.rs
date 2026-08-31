@@ -51,6 +51,17 @@ impl Writer {
             self.write_byte(byte);
         }
     }
+    fn clear(&mut self, background: u8) {
+        for i in 0..2000 {
+            unsafe {
+                *VGA_BUFFER.add(i * 2) = b' ';
+                *VGA_BUFFER.add(i * 2 + 1) = background;
+            }
+        }
+
+        self.column = 0;
+        self.row = 0;
+    }
 }
 
 impl Write for Writer {
@@ -63,20 +74,11 @@ impl Write for Writer {
 
 #[unsafe(no_mangle)]
 pub extern "C" fn kernel_main() -> ! {
-    clear(0x0F);
     let mut writer = Writer::new(0x0F);
+    writer.clear(0x0F);
     write!(writer, "hi").unwrap();
 
     loop {}
-}
-
-fn clear(background: u8) {
-    for i in 0..2000 {
-        unsafe {
-            *VGA_BUFFER.add(i * 2) = b' ';
-            *VGA_BUFFER.add(i * 2 + 1) = background;
-        }
-    }
 }
 
 #[panic_handler]

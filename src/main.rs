@@ -23,6 +23,11 @@ impl Writer {
         }
     }
     fn write_byte(&mut self, byte: u8) {
+        if self.column >= 80 {
+            self.column = 0;
+            self.row += 1;
+        }
+
         unsafe {
             let position = self.row * 80 + self.column;
 
@@ -32,14 +37,23 @@ impl Writer {
 
         self.column += 1;
     }
+    fn write_string(&mut self, text: &str) {
+        for byte in text.bytes() {
+            if byte == b'\n' {
+                self.column = 0;
+                self.row += 1;
+            } else {
+                self.write_byte(byte);
+            }
+        }
+    }
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn kernel_main(_magic: u32, _addr: u32) -> ! {
     clear(0x0F);
     let mut writer = Writer::new(0x0F);
-    writer.write_byte(b'h');
-    writer.write_byte(b'i');
+    writer.write_string("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     loop {}
 }
 
@@ -54,5 +68,9 @@ fn clear(background: u8) {
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
+    let mut writer = Writer::new(0x04);
+
+    writer.write_string("KERNEL PANIC");
+
     loop {}
 }

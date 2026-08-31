@@ -76,7 +76,15 @@ impl Write for Writer {
 pub extern "C" fn kernel_main() -> ! {
     let mut writer = Writer::new(0x0F);
     writer.clear(0x0F);
-    write!(writer, "hi").unwrap();
+    let logo = r#"
+        ________              _____        _______________
+        ___  __ \___  __________  /_____  ___  __ \_  ___/
+        __  /_/ /  / / /_  ___/  __/_  / / /  / / /____ \
+        _  _, _// /_/ /_(__  )/ /_ _  /_/ // /_/ /____/ /
+        /_/ |_| \__,_/ /____/ \__/ _\__, / \____/ /____/
+                                   /____/
+    "#;
+    write!(writer, "{}", logo).unwrap();
 
     loop {}
 }

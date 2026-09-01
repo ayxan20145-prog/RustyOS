@@ -18,12 +18,8 @@ struct Writer {
 }
 
 impl Writer {
-    fn new(color: u8) -> Self {
-        Self {
-            column: 0,
-            row: 0,
-            color,
-        }
+    fn new(column: usize, row: usize, color: u8) -> Self {
+        Self { column, row, color }
     }
     fn write_byte(&mut self, byte: u8) {
         if byte == b'\n' {
@@ -58,9 +54,6 @@ impl Writer {
                 *VGA_BUFFER.add(i * 2 + 1) = background;
             }
         }
-
-        self.column = 0;
-        self.row = 0;
     }
 }
 
@@ -74,7 +67,7 @@ impl Write for Writer {
 
 #[unsafe(no_mangle)]
 pub extern "C" fn kernel_main() -> ! {
-    let mut writer = Writer::new(0x0F);
+    let mut writer = Writer::new(0, 0, 0x0F);
     writer.clear(0x0F);
     write!(
         writer,
@@ -87,9 +80,10 @@ pub extern "C" fn kernel_main() -> ! {
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    let mut writer = Writer::new(0x04);
+    let mut writer = Writer::new(34, 12, 0x40);
 
-    write!(writer, "KERNEL PANIC: {}", info).unwrap();
+    writer.clear(0x40);
+    write!(writer, "KERNEL PANIC\n{}", info).unwrap();
 
     loop {}
 }

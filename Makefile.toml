@@ -1,0 +1,24 @@
+[tasks.iso]
+description = "build iso"
+script = [
+    "cargo build",
+    "mkdir -p iso/boot/grub",
+    "cp grub.cfg iso/boot/grub",
+    "cp target/i686-unknown-none/debug/RS-DOS iso/boot/rs-dos",
+    "grub-mkrescue -o rs-dos.iso iso"
+]
+
+[tasks.clean]
+description = "remove build files"
+clear = true
+script = [
+    "cargo clean",
+    "rm -rf iso rs-dos.iso"
+]
+
+[tasks.run]
+description = "run in qemu"
+dependencies = ["iso"]
+script = [
+    "qemu-system-i386 -cdrom rs-dos.iso"
+]

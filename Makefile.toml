@@ -1,3 +1,6 @@
+[tasks.default]
+alias = "iso"
+
 [tasks.iso]
 description = "build iso"
 script = [
